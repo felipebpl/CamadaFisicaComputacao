@@ -5,10 +5,8 @@
 #Aplicação
 ####################################################
 
-
 #esta é a camada superior, de aplicação do seu software de comunicação serial UART.
 #para acompanhar a execução e identificar erros, construa prints ao longo do código! 
-
 
 from enlace import *
 import time
@@ -22,61 +20,89 @@ import numpy as np
 #use uma das 3 opcoes para atribuir à variável a porta usada
 #serialName = "/dev/ttyACM0"           # Ubuntu (variacao de)
 #serialName = "/dev/tty.usbmodem1411" # Mac    (variacao de)
-serialName = "COM6"                  # Windows(variacao de)
-
+serialName = "COM4"                  # Windows(variacao de)
 
 def main():
     try:
         #declaramos um objeto do tipo enlace com o nome "com". Essa é a camada inferior à aplicação. Observe que um parametro
         #para declarar esse objeto é o nome da porta.
-        com1 = enlace('COM6')
-        
+        com1 = enlace(serialName)
     
         # Ativa comunicacao. Inicia os threads e a comunicação seiral 
         com1.enable()
         #Se chegamos até aqui, a comunicação foi aberta com sucesso. Faça um print para informar.
-        
+        print("-------------------------------------")
+        print("Comunicação aberta com sucesso!")
+        print("-------------------------------------")
+
+        t0 = time.time()
         #aqui você deverá gerar os dados a serem transmitidos. 
         #seus dados a serem transmitidos são uma lista de bytes a serem transmitidos. Gere esta lista com o 
         #nome de txBuffer. Esla sempre irá armazenar os dados a serem enviados.
-        
-        #txBuffer = imagem em bytes!
-    
 
-    
+        imageR = "./imgs/br_flag.png"
+        imageW = './imgs/recebidaCopia.png'
+
+        print("Carregando imagem para transmissão :")
+        print(" → {}".format(imageR))
+        print("-------------------------------------")
+
+        #txBuffer = imagem em bytes!
+        txBuffer = open(imageR, 'rb').read()
         #faça aqui uma conferência do tamanho do seu txBuffer, ou seja, quantos bytes serão enviados.
-       
-            
+        txLen = len(txBuffer)
+
+        print("Bytes enviados no txBuffer = {}".format(txLen))
         #finalmente vamos transmitir os tados. Para isso usamos a funçao sendData que é um método da camada enlace.
         #faça um print para avisar que a transmissão vai começar.
+        print("-------------------------------------")
+        print("Começando a transmissão")
+        print("-------------------------------------")
         #tente entender como o método send funciona!
+
         #Cuidado! Apenas trasmitimos arrays de bytes! Nao listas!
-          
-          
-  
-        txBuffer = #dados
         com1.sendData(np.asarray(txBuffer))
-       
+
+        print('ENVIANDO', txBuffer)
         # A camada enlace possui uma camada inferior, TX possui um método para conhecermos o status da transmissão
         # Tente entender como esse método funciona e o que ele retorna
+
         txSize = com1.tx.getStatus()
+        # print("-------------------------------------")
+        # print("txSize = {}".format(txSize))
         #Agora vamos iniciar a recepção dos dados. Se algo chegou ao RX, deve estar automaticamente guardado
         #Observe o que faz a rotina dentro do thread RX
         #print um aviso de que a recepção vai começar.
-        
+
+        print("-------------------------------------")
+        print("Começando a recepção")      
+        print("-------------------------------------")
+
         #Será que todos os bytes enviados estão realmente guardadas? Será que conseguimos verificar?
         #Veja o que faz a funcao do enlaceRX  getBufferLen
-      
         #acesso aos bytes recebidos
-        txLen = len(txBuffer)
+
         rxBuffer, nRx = com1.getData(txLen)
-        print("recebeu {}" .format(rxBuffer))
-            
+
+        print("Salvando dados no arquivo :")
+        print(" → {}".format(imageW))
+        print("-------------------------------------")
+        f = open(imageW, 'wb')
+        f.write(rxBuffer)
+        f.close() 
+
+        print("Recebeu {}" .format(rxBuffer))
+
+        tf = time.time()
+        tempo_total = tf - t0
+
+        print("-------------------------------------")
+        print("Tempo de duração da transmissão: {} segundos".format(tempo_total))
     
         # Encerra comunicação
-        print("-------------------------")
+        print("-------------------------------------")
         print("Comunicação encerrada")
-        print("-------------------------")
+        print("-------------------------------------")
         com1.disable()
         
     except Exception as erro:
@@ -84,7 +110,6 @@ def main():
         print(erro)
         com1.disable()
         
-
     #so roda o main quando for executado do terminal ... se for chamado dentro de outro modulo nao roda
 if __name__ == "__main__":
     main()
