@@ -9,7 +9,6 @@ import numpy as np
 serialName = "COM4"
 
 def random_commands():
-    print("oi")
     n = random.randint(10,30)
     commands = [b'00FF',b'00',b'0F',b'F0',b'FF00',b'FF']
     commands_list = list()
@@ -30,8 +29,7 @@ def main():
         print("----------------------------------------")
         
         comandos = random_commands()
-        print("oi")
-        print(comandos)
+        
         txBuffer = comandos
 
         com1.sendData(txBuffer)

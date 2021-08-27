@@ -7,11 +7,22 @@ import numpy as np
 serialName = "COM4"
 
 def main():
-    com1 = enlace(serialName)
-
-    com1.enable()
+    try:
 
 
+        while True:
 
-    txLen = len(txBuffer)
-    rxBuffer, nRx = com1.getData(txLen)
+            com1 = enlace(serialName)
+
+            com1.enable()
+
+            txBuffer = com1.rx.getBufferLen()
+            
+            txLen = len(txBuffer)
+            
+            rxBuffer, nRx = com1.getData(txLen)
+
+    except Exception as erro:
+        print("ops! :-\\")
+        print(erro)
+        com1.disable()
