@@ -29,10 +29,11 @@ def main():
         print("----------------------------------------")
         
         comandos = random_commands()
-        
+
         txBuffer = comandos
 
         com1.sendData(txBuffer)
+        com1.disable()
 
     
     except Exception as erro:
