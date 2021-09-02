@@ -6,17 +6,23 @@ import time
 import random
 import numpy as np
 
-serialName = "COM4"
+serialName = "COM5"
 
 def random_commands():
     n = random.randint(10,30)
-    commands = [b'00FF',b'00',b'0F',b'F0',b'FF00',b'FF']
+    commands = [b'\x00\xFF',b'\x00',b'\x0F',b'\xF0',b'\xFF\x00',b'\xFF']
     commands_list = list()
     for i in range(n):
-        commands_list.append(random.choice(commands))
+        comando = random.choice(commands)
+        if len(comando) == 2:
+            commands_list.append(b'\x02')
+        commands_list.append(comando)
+    commands_list.append(b'\x01')
     array_commands = np.asarray(commands_list)
     print(array_commands)
     return array_commands
+
+
 
 def main():
     try:
@@ -27,7 +33,9 @@ def main():
         print("----------------------------------------")
         print("Comunicação aberta com sucesso!")
         print("----------------------------------------")
-        
+        time.sleep(1)
+        com1.sendData(b'\xaa')
+
         comandos = random_commands()
 
         txBuffer = comandos

@@ -5,7 +5,7 @@ import numpy as np
 import client
 
 
-serialName = "COM4"
+serialName = "COM5"
 
 def main():
     try:
@@ -16,16 +16,23 @@ def main():
         print("----------------------------------------")
         print("Servidor aberto com sucesso!")
         print("----------------------------------------")
+        rxBuffer, nRx = com1.getData(1)
+        com1.rx.clearBuffer
+        
+        lista_servidor = []
 
         while True:
 
-            txBuffer = com1.rx.getBufferLen()
+            rxBuffer, nRx = com1.getData(1)
+            
+            if rxBuffer == b'\x02':
+                rxBuffer, nRx = com1.getData(2)
 
-            #txLen = len(txBuffer)
+            lista_servidor.append(rxBuffer)
+            if rxBuffer == b'\x01':
+                break
 
-            rxBuffer, nRx = com1.getData(txBuffer)
-
-        com1.disable()
+        com1.disable
 
     except Exception as erro:
         print("ops! :-\\")
