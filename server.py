@@ -17,7 +17,7 @@ def main():
         print("Servidor aberto com sucesso!")
         print("----------------------------------------")
         rxBuffer, nRx = com1.getData(1)
-        com1.rx.clearBuffer
+        com1.rx.clearBuffer()
         
         lista_servidor = []
 
@@ -27,12 +27,13 @@ def main():
             
             if rxBuffer == b'\x02':
                 rxBuffer, nRx = com1.getData(2)
-
-            lista_servidor.append(rxBuffer)
-            if rxBuffer == b'\x01':
+                lista_servidor.append(rxBuffer)
+            elif rxBuffer == b'\x01':
                 break
+            else:
+                lista_servidor.append(rxBuffer)
 
-        com1.disable
+        com1.disable()
 
     except Exception as erro:
         print("ops! :-\\")
