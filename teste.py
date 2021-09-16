@@ -1,20 +1,25 @@
 #   para saber a sua porta, execute no terminal :
 #   python -m serial.tools.list_ports
 
+from os import path
 from enlace import *
 import time
 import random
 import numpy as np
+import math
 
 serialName = "COM6"
 
+
 class Datagram:
-    def __init__(self, head, payload, eop):
+
+    def __init__(self, head, payload):
         self.head = head
         self.payload = payload
         self.eop = b'\x01\x02\x03\x04'
 
     def create_datagram(self):
+        
         return (self.head + self.payload + self.eop)
 
 class Head:
@@ -30,14 +35,46 @@ class Head:
 
         return self.data == [b'self.data', b'self.size', b'pkg_number', b'00',b'00', b'00', b'00', b'00', b'00', b'00']
 
-class Payload:
-    def __init__(self):
-        
-        
-        
+class Payload():
+    def __init__(self, content):
+        self.content = content
 
+    def build_package(self): 
+        #retorna os pacotes já separados
+        self.package_list = []
+        for size in range(self.total_packages()):
+            self.package_list.append([self.content[size*114:(size+1)*114]])
+        return self.package_list
 
-print(Head.create_head())
+    def package_size(self):
+        #retorna o tamanho do pacote
+        self.size_package = []
+        for size in range(len(self.build_package())):
+            self.size_package.append(len(Payload.build_package(self)[size][0]))
+        return self.size_package
 
-#if __name__ == "__main__":
-#    main()
+    def total_packages(self):
+        #retorna a quantidade de pacotes
+        self.packages = math.ceil(len(self.content)/114)
+        return self.packages
+
+    def packages_number(self):
+        #retorna a lista dos pacotes separados
+        self.n = []
+        for size in range(len(self.package_size())):
+            self.n.append(size + 1)
+        return self.n
+
+img_path = 'imgs/br_flag.png'
+with open(img_path, 'rb') as f:
+    ByteImage = f.read()
+
+head = Head()
+payload = Payload(ByteImage)
+
+datagrama = Datagram(head,payload)
+
+# print(payload.package_size())
+# print(payload.total_packages())
+# print(payload.packages_number())
+print(payload.build_package())
