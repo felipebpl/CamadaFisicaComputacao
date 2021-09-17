@@ -5,27 +5,9 @@ from enlace import *
 import time
 import random
 import numpy as np
+from teste import Datagram,Head,Payload
 
-serialName = "COM6"
-
-def random_commands():
-    n = random.randint(10,30)
-    commands = [b'\x00\xFF',b'\x00',b'\x0F',b'\xF0',b'\xFF\x00',b'\xFF']
-    commands_list = list()
-    lista_semflag = []
-    for i in range(n):
-        comando = random.choice(commands)
-        if len(comando) == 2:
-            commands_list.append(b'\x02')
-        commands_list.append(comando)
-        lista_semflag.append(comando)
-    commands_list.append(b'\x01')
-    commands_list = b"".join(commands_list)
-    print(commands_list)
-    print(lista_semflag)
-    return commands_list, lista_semflag
-
-
+serialName = "COM3"
 
 def main():
     try:
@@ -35,17 +17,29 @@ def main():
         
         print("----------------------------------------")
         print("Comunicação aberta com sucesso!")
-        print("----------------------------------------")       
-        time.sleep(1) 
-        com1.sendData(b'\xaa')
-        time.sleep(1)
-        comandos, comandos_semflag = random_commands()
+        print("----------------------------------------")
 
-        time.sleep(1)
+        img_path = 'imgs/br_flag.png'
+        with open(img_path, 'rb') as f:
+            ByteImage = f.read()
 
-        txBuffer = np.asarray(comandos)
-        print(len(comandos_semflag))
-        
+        payload = Payload(ByteImage)
+
+        total_packages = payload.total_packages()
+        package_size = payload.package_size()
+        package_number = payload.packages_number()
+
+        head = Head(total=total_packages,size=package_size,pkg_number=package_number)
+        head.create_head()
+
+        datagrama = Datagram(head,payload)
+        datagrama.create_datagram()
+    
+        # time.sleep(1) 
+        # com1.sendData(b'\xaa')
+        # time.sleep(1)
+
+        txBuffer = np.asarray(datagrama)
 
         com1.sendData(txBuffer)
 
