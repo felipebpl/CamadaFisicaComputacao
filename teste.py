@@ -25,20 +25,17 @@ class Datagram:
 class Head:
     def __init__(self, total, size, pkg_number):
         #self.type = type
+        self.head_list = []
+
         self.total = total
         self.size = size
         self.pkg_number = pkg_number
     
-    def create_head(self):
-        head_list = []
+    def create_head(self, head_list):
         #head_list.append((self.type).to_bytes(1, 'big'))
-        head_list.append((self.total).to_bytes(1, 'big'))
-        head_list.append((self.size).to_bytes(1, 'big'))
-        head_list.append((self.pkg_number).to_bytes(1, 'big'))
-
-        self.array_data = np.asarray(self.data)
-        self.array_size = np.asarray(self.size)
-        self.array_pkgnumber = np.asarray(self.pkg_number)
+        self.head_list.append((self.total).to_bytes(1, 'big'))
+        self.head_list.append((self.size).to_bytes(1, 'big'))
+        self.head_list.append((self.pkg_number).to_bytes(1, 'big'))
 
         return
 
@@ -76,7 +73,7 @@ class Payload():
 img_path = 'imgs/br_flag.png'
 with open(img_path, 'rb') as f:
     ByteImage = f.read()
-    
+
 
 head = Head()
 payload = Payload(ByteImage)
