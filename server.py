@@ -3,9 +3,9 @@ import time
 import random
 import numpy as np
 import client
-
-
-serialName = "COM5"
+from classes import Datagram,Head,Payload,Handshake
+    
+serialName = "COM3"
 
 def main():
     try:
@@ -17,22 +17,19 @@ def main():
         print("Servidor aberto com sucesso!")
         print("----------------------------------------")
         rxBuffer, nRx = com1.getData(1)
+
+        time.sleep(1) 
+        print("----------------------------------------")
+        com1.sendData('Sim, manda papi')
+        print("----------------------------------------")
+        time.sleep(1)
         com1.rx.clearBuffer()
         
-        lista_servidor = []
 
         while True:
 
             rxBuffer, nRx = com1.getData(1)
-            
-            if rxBuffer == b'\x02':
-                rxBuffer, nRx = com1.getData(2)
-                lista_servidor.append(rxBuffer)
-            elif rxBuffer == b'\x01':
-                break
-            else:
-                lista_servidor.append(rxBuffer)
-
+    
         com1.disable()
 
     except Exception as erro:
