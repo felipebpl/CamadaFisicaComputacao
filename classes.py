@@ -22,7 +22,6 @@ class Head():
     def __init__(self, total, size, pkg_number):
 
         self.head_list = []
-
         self.total = total
         self.size = size
         self.pkg_number = pkg_number
@@ -34,10 +33,10 @@ class Head():
         self.head_list.append(int(self.pkg_number).to_bytes(1, 'big'))
         self.head = b''.join(self.head_list)
 
-        while self.head <= 10:
+        while len(self.head) <= 10:
             self.head += b'\xFF'
 
-        return self.head
+        return (self.head)
 
 class Payload():
     def __init__(self, content):

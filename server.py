@@ -3,7 +3,7 @@ import time
 import numpy as np
 from classes import Datagram,Head,Payload
     
-serialName = "COM1"
+serialName = "COM5"
 
 def create_head(self, keep, repeat):
     #head_list.append((self.type).to_bytes(1, 'big'))
@@ -23,6 +23,7 @@ def create_head(self, keep, repeat):
 def main():
     results = []
     id = b''
+    eop = b'\x00\x00\x00\x00'
     datagram = Datagram(serialName)
 
     try:
@@ -57,12 +58,14 @@ def main():
                 payload_id = head[1] .to_bytes(1, 'big')
                 package_nbr = head[2]
 
-                print("Id do pacote: "'{}'.format(payload_id))
-                print("Quantidade de pacotes: "'{}'.format(package_nbr))
+                print("Id do pacote: "+'{}'.format(payload_id))
+                print("Quantidade de pacotes: "+'{}'.format(package_nbr))
                 payload, payloadSize = datagram.com1.getData(payload_size)
 
                 EOP, nRx = datagram.com1.getData(4)
-                if EOP == b'\x00\x00\x00\x00':
+                print(eop)
+                print(EOP)
+                if EOP == eop:
                     print("Tudo certo!")
                     head = create_head(b'\x01', b'\x00')
                     sendNext = datagram.create_datagram(head)

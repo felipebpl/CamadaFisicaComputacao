@@ -11,15 +11,15 @@ img_path = "br.png"
 with open(img_path, 'rb') as f:
     ByteImage = f.read()
 
-serialName = "COM2"
+serialName = "COM6"
 
 def main():
     pkg = Datagram(door=serialName)
     payload = Payload(ByteImage)
 
-    size_list= payload.package_size
-    pkg_nbr = payload.packages_number
-    pkg_list = payload.build_package
+    size_list= payload.package_size()
+    pkg_nbr = payload.packages_number()
+    pkg_list = payload.build_package()
 
     print("oi")
     
@@ -28,10 +28,12 @@ def main():
         print("----------------------------------------")
         print("Comunicação aberta com sucesso!")
 
+        print(pkg_nbr)
+
 
         time.sleep(1)
-        handshake = True
-        while handshake:
+
+        while True:
 
             print("----------------------------------------")
             pkg.com1.sendData(b'Servidor pronto para receber dados?')
@@ -63,13 +65,16 @@ def main():
             else: 
                 print('Começando o envio dos pacotes')
                 print("----------------------------------------")
-                handshake = False                             
-
+                False         
+                break                    
+        
         for i in pkg_nbr:
             while True:
+                print("oi1")
                 headClass = Head(size_list[i-1], pkg_nbr[i-1], total=payload.total_packages())
                 head = headClass.create_head()
                 pacote = pkg.create_datagram(head, pkg_list[i-1][0])
+                print("oi2")
 
                 if error and i==2:
                     headClass = Head(size_list[i-1], pkg_nbr[i-2], total=payload.total_packages())
@@ -81,6 +86,7 @@ def main():
 
                 #print(pacote)
                 time.sleep(0.1)
+                print("oi1")
                 pkg.com1.sendData(pacote)
                 print("Pacotes enviados")
 
