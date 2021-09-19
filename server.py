@@ -3,7 +3,7 @@ import time
 import numpy as np
 from classes import Datagram,Head,Payload
     
-serialName = "COM6"
+serialName = "COM1"
 
 def create_head(self, keep, repeat):
     #head_list.append((self.type).to_bytes(1, 'big'))
@@ -31,25 +31,22 @@ def main():
 
         handshake = True
         while handshake:
-            com1 = enlace(serialName)
-
-            com1.enable()
 
             print("----------------------------------------")
             print("Servidor aberto com sucesso!")
             print("----------------------------------------")
-            rxBuffer, nRx = com1.getData(1)
+            rxBuffer, nRx = datagram.com1.getData(1)
 
             time.sleep(1) 
-            com1.sendData(b'Funcionando')
+            datagram.com1.sendData(b'Funcionando')
             time.sleep(1)
-            com1.rx.clearBuffer()
+            datagram.com1.rx.clearBuffer()
 
             handshake = False
 
         while True:
 
-            rxBuffer, nRx = com1.getData(1)
+            rxBuffer, nRx = datagram.com1.getData(1)
 
             while c < packages:
 
@@ -88,15 +85,15 @@ def main():
             for i in results:
                 all_results += i
 
-            f = open("imgs/br_flag.png", 'wb')
-            f.write(all_results)
-            f.close
+            abre = open("br.png", 'wb')
+            abre.write(all_results)
+            abre.close
             
 
     except Exception as erro:
         print("ops! :-\\")
         print(erro)
-        com1.disable()
+        datagram.com1.disable()
 
 if __name__ == "__main__":
     main()

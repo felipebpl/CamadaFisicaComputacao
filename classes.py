@@ -68,4 +68,3 @@ class Payload():
         for size in range(len(self.package_size())):
             self.n.append(size + 1)
         return self.n
-

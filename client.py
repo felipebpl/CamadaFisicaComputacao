@@ -7,11 +7,11 @@ import time
 import numpy as np
 from classes import Datagram,Head,Payload
 
-img_path = 'imgs/br_flag.png'
+img_path = "br.png"
 with open(img_path, 'rb') as f:
     ByteImage = f.read()
 
-serialName = "COM6"    
+serialName = "COM2"
 
 def main():
     pkg = Datagram(door=serialName)
@@ -20,25 +20,24 @@ def main():
     size_list= payload.package_size
     pkg_nbr = payload.packages_number
     pkg_list = payload.build_package
+
+    print("oi")
     
     try:
-        com1 = enlace(serialName)
-        
-        com1.enable()
         
         print("----------------------------------------")
         print("Comunicação aberta com sucesso!")
 
 
         time.sleep(1)
-
-        while True:
+        handshake = True
+        while handshake:
 
             print("----------------------------------------")
-            com1.sendData(b'Servidor pronto para receber dados?')
+            pkg.com1.sendData(b'Servidor pronto para receber dados?')
             
             t1 = time.time()
-            tamanho, nRx = com1.getData(1)
+            tamanho, nRx = pkg.com1.getData(1)
             t2 = time.time()
             dif = t2 - t1
 
@@ -55,7 +54,7 @@ def main():
 
                     print('Encerrando Comunicação')
                     print("----------------------------------------")
-                    com1.disable()
+                    pkg.com1.disable()
 
                 else:
                     print("Digite Y ou N")
@@ -64,9 +63,7 @@ def main():
             else: 
                 print('Começando o envio dos pacotes')
                 print("----------------------------------------")
-                False
-                break
-                             
+                handshake = False                             
 
         for i in pkg_nbr:
             while True:
@@ -102,5 +99,6 @@ def main():
     except Exception as exception:
         print(exception)
         pkg.com1.disable()
+
 if __name__ == "__main__":
     main()
