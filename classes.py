@@ -34,7 +34,7 @@ class Head():
         self.head = b''.join(self.head_list)
 
         while len(self.head) <= 10:
-            self.head += b'\xFF'
+            self.head += b'\xaa'
 
         return (self.head)
 

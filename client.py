@@ -68,26 +68,30 @@ def main():
                 False         
                 break                    
         
+        
         for i in pkg_nbr:
             while True:
                 print("oi1")
-                headClass = Head(size_list[i-1], pkg_nbr[i-1], total=payload.total_packages())
+                print(payload.total_packages())
+                print(size_list[0], pkg_nbr[0])
+                headClass = Head(size_list[i-1], pkg_nbr[i-1], payload.total_packages())
                 head = headClass.create_head()
+                print(head)
                 pacote = pkg.create_datagram(head, pkg_list[i-1][0])
-                print("oi2")
+                print(pacote)
+                
 
-                if error and i==2:
-                    headClass = Head(size_list[i-1], pkg_nbr[i-2], total=payload.total_packages())
+                if i==2:
+                    headClass = Head(size_list[i-1], pkg_nbr[i-2], payload.total_packages())
                     head = headClass.create_head()
                     pacote = pkg.create_datagram(head, pkg_list[i-2][0])
-                    error = False
-                    print("erro")
+                    False
+                    print("Enviou errado")
 
 
-                #print(pacote)
-                time.sleep(0.1)
-                print("oi1")
+                time.sleep(1)
                 pkg.com1.sendData(pacote)
+               
                 print("Pacotes enviados")
 
                 print("Esperando Resposta")

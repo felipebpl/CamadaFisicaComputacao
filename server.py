@@ -8,15 +8,15 @@ serialName = "COM5"
 def create_head(self, keep, repeat):
     #head_list.append((self.type).to_bytes(1, 'big'))
     head_list = []
-    head_list.append(int(self.total).to_bytes(1, 'big'))
-    head_list.append(int(self.size).to_bytes(1, 'big'))
-    head_list.append(int(self.pkg_number).to_bytes(1, 'big'))
+    head_list.append(int(0).to_bytes(1, 'big'))
+    head_list.append(int(0).to_bytes(1, 'big'))
+    head_list.append(int(0).to_bytes(1, 'big'))
     head_list.append(keep)
     head_list.append(repeat)
     head = b''.join(head_list)
 
     while len(head) <= 10:
-        head += b'\xFF'
+        head += b'\xaa'
 
     return head
 
@@ -30,8 +30,7 @@ def main():
         packages = 255
         c = 1
 
-        handshake = True
-        while handshake:
+        while True:
 
             print("----------------------------------------")
             print("Servidor aberto com sucesso!")
@@ -40,57 +39,58 @@ def main():
 
             time.sleep(1) 
             datagram.com1.sendData(b'Funcionando')
+            print("Funcionando")
             time.sleep(1)
             datagram.com1.rx.clearBuffer()
 
-            handshake = False
+            False
+            break
 
-        while True:
+        while c < packages:
 
-            rxBuffer, nRx = datagram.com1.getData(1)
+            print("Recebendo Head")
+            print("oi")
+            head, nRx = datagram.com1.getData(10)
+            print("oi dps")
+            print(head)
+            print(head[0])
+            payload_size = head[0]
+            payload_id = head[1] .to_bytes(1, 'big')
+            package_nbr = head[2]
 
-            while c < packages:
+            print("Id do pacote: "'{}'.format(payload_id))
+            print("Quantidade de pacotes: "'{}'.format(package_nbr))
+            payload, nRx = datagram.com1.getData(payload_size)
 
-                print("Recebendo Head")
-                
-                head, nRx = datagram.com1.getData(10)
-                payload_size = head[0]
-                payload_id = head[1] .to_bytes(1, 'big')
-                package_nbr = head[2]
+            EOP, nRx = datagram.com1.getData(4)
+            print(eop)
+            print(EOP)
+            if EOP == eop:
+                print("Tudo certo!")
+                head = create_head(b'\x01', b'\x00')
+                sendNext = datagram.create_datagram(head)
+                datagram.com1.sendData(sendNext)
+                results.append(payload)
+                c = int.from_bytes(payload_id, "big")
 
-                print("Id do pacote: "+'{}'.format(payload_id))
-                print("Quantidade de pacotes: "+'{}'.format(package_nbr))
-                payload, payloadSize = datagram.com1.getData(payload_size)
+            else:
+                print("Erro")
+                datagram.com1.rx.clearBuffer()
+                head = create_head(b'\x00', b'\x01')
+                reSend = datagram.create_datagram(head)
+                datagram.com1.sendData(reSend)
+        
+        
+        print("Fim")    
 
-                EOP, nRx = datagram.com1.getData(4)
-                print(eop)
-                print(EOP)
-                if EOP == eop:
-                    print("Tudo certo!")
-                    head = create_head(b'\x01', b'\x00')
-                    sendNext = datagram.create_datagram(head)
-                    datagram.com1.sendData(sendNext)
-                    results.append(payload)
-                    c = int.from_bytes(payload_id, "big")
+        all_results = b''
 
-                else:
-                    print("Erro")
-                    datagram.com1.rx.clearBuffer()
-                    head = create_head(b'\x00', b'\x01')
-                    reSend = datagram.create_datagram(head)
-                    datagram.com1.sendData(reSend)
-            
-            
-            print("Fim")    
+        for i in results:
+            all_results += i
 
-            all_results = b''
-
-            for i in results:
-                all_results += i
-
-            abre = open("br.png", 'wb')
-            abre.write(all_results)
-            abre.close
+        abre = open("br.png", 'wb')
+        abre.write(all_results)
+        abre.close
             
 
     except Exception as erro:
