@@ -1,24 +1,26 @@
 #   para saber a sua porta, execute no terminal :
 #   python -m serial.tools.list_ports
 
-from os import path
+from os import error, path
 from enlace import *
 import numpy as np
 import math
 
+
 class Datagram:
 
-    def __init__(self, head, payload):
-        self.head = head
-        self.payload = payload
-        self.eop = b'\x01\x02\x03\x04'
+    def __init__(self, door):
+        self.com1 = enlace(door)
+        self.com1.enable()
+        print('open')
+        self.eop = b'\x00\x00\x00\x00'
 
-    def create_datagram(self):
-        return (self.head + self.payload + self.eop)
+    def create_datagram(self, head, pkg=b''):
+        return (head + pkg + self.eop)
 
 class Head():
     def __init__(self, total, size, pkg_number):
-        #self.type = type
+
         self.head_list = []
 
         self.total = total
@@ -66,3 +68,4 @@ class Payload():
         for size in range(len(self.package_size())):
             self.n.append(size + 1)
         return self.n
+

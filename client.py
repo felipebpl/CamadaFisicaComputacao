@@ -4,15 +4,23 @@
 from numpy.core.fromnumeric import size
 from enlace import *
 import time
-import random
 import numpy as np
 from classes import Datagram,Head,Payload
 
+img_path = 'imgs/br_flag.png'
+with open(img_path, 'rb') as f:
+    ByteImage = f.read()
 
-serialName = "COM3"     
-
+serialName = "COM6"    
 
 def main():
+    pkg = Datagram(door=serialName)
+    payload = Payload(ByteImage)
+
+    size_list= payload.package_size
+    pkg_nbr = payload.packages_number
+    pkg_list = payload.build_package
+    
     try:
         com1 = enlace(serialName)
         
@@ -30,11 +38,8 @@ def main():
             com1.sendData(b'Servidor pronto para receber dados?')
             
             t1 = time.time()
-
             tamanho, nRx = com1.getData(1)
-
             t2 = time.time()
-            
             dif = t2 - t1
 
             if dif > 5:
@@ -62,46 +67,40 @@ def main():
                 False
                 break
                              
-                
-        # if len(tamanho) > 0 :
-        #     recebeu = int.from_bytes(tamanho, byteorder='big')
-        #     print(recebeu)
-        #     break
 
-        img_path = 'imgs/br_flag.png'
-        with open(img_path, 'rb') as f:
-            ByteImage = f.read()
+        for i in pkg_nbr:
+            while True:
+                headClass = Head(size_list[i-1], pkg_nbr[i-1], total=payload.total_packages())
+                head = headClass.create_head()
+                pacote = pkg.create_datagram(head, pkg_list[i-1][0])
 
-        payload = Payload(ByteImage)
+                if error and i==2:
+                    headClass = Head(size_list[i-1], pkg_nbr[i-2], total=payload.total_packages())
+                    head = headClass.create_head()
+                    pacote = pkg.create_datagram(head, pkg_list[i-2][0])
+                    error = False
+                    print("erro")
 
-        total_packages = payload.total_packages()
-        package_size = payload.package_size()
-        package_number = payload.packages_number()
 
-        head = Head(total_packages,package_size,package_number)
-        head.create_head()
+                #print(pacote)
+                time.sleep(0.1)
+                pkg.com1.sendData(pacote)
+                print("Pacotes enviados")
 
-        datagrama = Datagram(head,payload)
-        datagrama.create_datagram()
-    
-        # txBuffer = np.asarray(datagrama)
-        txBuffer = payload.build_package()
+                print("Esperando Resposta")
+                rxBuffer, nRx = pkg.com1.getData(14)
+                print(rxBuffer)
+                print(i)
+                keep = rxBuffer[3]
+                repeat = rxBuffer[4]
 
-        com1.sendData(txBuffer)
-
-        while True:
-            tamanho, nRx = com1.getData(1)
-            if len(tamanho) > 0 :
-                recebeu = int.from_bytes(tamanho, byteorder='big')
-                print(recebeu)
-                break
-
-        com1.disable()
-    
-    except Exception as erro:
-        print("ops! :-\\")
-        print(erro)
-        com1.disable()
-
+                if keep == 1 and repeat == 0:
+                    False
+                    print("Recebi para continuar")
+            
+        print("Enviei Tudo")
+    except Exception as exception:
+        print(exception)
+        pkg.com1.disable()
 if __name__ == "__main__":
     main()
