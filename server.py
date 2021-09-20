@@ -5,7 +5,7 @@ from classes import Datagram,Head,Payload
     
 serialName = "COM5"
 
-def create_head(self, keep, repeat):
+def c_head(keep, repeat):
     #head_list.append((self.type).to_bytes(1, 'big'))
     head_list = []
     head_list.append(int(0).to_bytes(1, 'big'))
@@ -39,19 +39,20 @@ def main():
 
             time.sleep(1) 
             datagram.com1.sendData(b'Funcionando')
+            
             print("Funcionando")
+            print("----------------------------------------")
             time.sleep(1)
             datagram.com1.rx.clearBuffer()
-
             False
             break
 
         while c < packages:
 
             print("Recebendo Head")
-            print("oi")
+            print("----------------------------------------")
             head, nRx = datagram.com1.getData(10)
-            print("oi dps")
+
             print(head)
             print(head[0])
             payload_size = head[0]
@@ -59,15 +60,21 @@ def main():
             package_nbr = head[2]
 
             print("Id do pacote: "'{}'.format(payload_id))
+            print("----------------------------------------")
             print("Quantidade de pacotes: "'{}'.format(package_nbr))
+            print("----------------------------------------")
             payload, nRx = datagram.com1.getData(payload_size)
 
             EOP, nRx = datagram.com1.getData(4)
-            print(eop)
-            print(EOP)
+            print(f'EOP -> {eop} == {EOP}')
+            print("----------------------------------------")
+
             if EOP == eop:
                 print("Tudo certo!")
-                head = create_head(b'\x01', b'\x00')
+                print("----------------------------------------")
+                k = b'\x01'
+                r = b'\x00'
+                head = c_head(keep=k,repeat=r)
                 sendNext = datagram.create_datagram(head)
                 datagram.com1.sendData(sendNext)
                 results.append(payload)
@@ -75,13 +82,16 @@ def main():
 
             else:
                 print("Erro")
+                print("----------------------------------------")
                 datagram.com1.rx.clearBuffer()
-                head = create_head(b'\x00', b'\x01')
+                k = b'\x00'
+                r = b'\x01'
+                head = c_head(keep=k,repeat=r)
                 reSend = datagram.create_datagram(head)
                 datagram.com1.sendData(reSend)
         
         
-        print("Fim")    
+        print("FIM")    
 
         all_results = b''
 
@@ -90,7 +100,7 @@ def main():
 
         abre = open("br.png", 'wb')
         abre.write(all_results)
-        abre.close
+        abre.close()
             
 
     except Exception as erro:
