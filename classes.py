@@ -4,7 +4,7 @@
 from os import error, path
 from enlace import *
 import numpy as np
-import math
+from math import *
 
 
 class Datagram:
@@ -13,7 +13,7 @@ class Datagram:
         self.com1 = enlace(door)
         self.com1.enable()
         print('open')
-        self.eop = b'\x00\x00\x00\x00'
+        self.eop = b'\xaa\xaa\xaa\xaa'
 
     def create_datagram(self, head, pkg=b''):
         return (head + pkg + self.eop)
@@ -33,8 +33,8 @@ class Head():
         self.head_list.append(int(self.pkg_number).to_bytes(1, 'big'))
         self.head = b''.join(self.head_list)
 
-        while len(self.head) <= 10:
-            self.head += b'\xaa'
+        while len(self.head) != 10:
+            self.head += b'\x00'
 
         return (self.head)
 
@@ -58,7 +58,7 @@ class Payload():
 
     def total_packages(self):
         #retorna a quantidade de pacotes
-        self.packages = math.ceil(len(self.content)/114)
+        self.packages = ceil(len(self.content)/114)
         return self.packages
 
     def packages_number(self):
