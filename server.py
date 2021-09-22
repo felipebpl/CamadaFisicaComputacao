@@ -15,12 +15,13 @@ def c_head(keep, repeat):
     head_list.append(repeat)
     head = b''.join(head_list)
 
-    while len(head) <= 10:
+    while len(head) != 10:
         head += b'\xaa'
 
     return head
 
 def main():
+    main = True
     results = []
     id = b''
     eop = b'\x00\x00\x00\x00'
@@ -30,22 +31,18 @@ def main():
         packages = 255
         c = 1
 
-        while True:
+        print("----------------------------------------")
+        print("Servidor aberto com sucesso!")
+        print("----------------------------------------")
+        rxBuffer, nRx = datagram.com1.getData(14)
 
-            print("----------------------------------------")
-            print("Servidor aberto com sucesso!")
-            print("----------------------------------------")
-            rxBuffer, nRx = datagram.com1.getData(1)
-
-            time.sleep(1) 
-            datagram.com1.sendData(b'Funcionando')
-            
-            print("Funcionando")
-            print("----------------------------------------")
-            time.sleep(1)
-            datagram.com1.rx.clearBuffer()
-            False
-            break
+        time.sleep(1) 
+        datagram.com1.sendData(rxBuffer)
+        
+        print("Funcionando")
+        print("----------------------------------------")
+        time.sleep(1)
+        datagram.com1.rx.clearBuffer()
 
         while c < packages:
 
@@ -53,8 +50,6 @@ def main():
             print("----------------------------------------")
             head, nRx = datagram.com1.getData(10)
 
-            print(head)
-            print(head[0])
             payload_size = head[0]
             payload_id = head[1] .to_bytes(1, 'big')
             package_nbr = head[2]
@@ -74,7 +69,7 @@ def main():
                 print("----------------------------------------")
                 k = b'\x01'
                 r = b'\x00'
-                head = c_head(keep=k,repeat=r)
+                head = c_head(k , r)
                 sendNext = datagram.create_datagram(head)
                 datagram.com1.sendData(sendNext)
                 results.append(payload)
@@ -101,6 +96,8 @@ def main():
         abre = open("br.png", 'wb')
         abre.write(all_results)
         abre.close()
+
+        datagram.com1.disable()
             
 
     except Exception as erro:

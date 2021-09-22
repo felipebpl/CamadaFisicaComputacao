@@ -20,6 +20,8 @@ def main():
     size_list= payload.package_size()
     pkg_nbr = payload.packages_number()
     pkg_list = payload.build_package()
+
+    test_error = True
     
     try:
         
@@ -38,25 +40,25 @@ def main():
             print('Servidor pronto para receber dados?')
 
             t_max =  time.time() + 5
-            head_handshake = (1).to_bytes(10, 'big')
-            eop_handshake = b'\x00\x00\x00\x00'
-            mensagem = head_handshake + eop_handshake
-            print(f'oi {mensagem}')
+            handshake = b'\xFF'*14
 
-            pkg.com1.sendData(mensagem)
+            txBuffer = handshake
+
+            pkg.com1.sendData(txBuffer)
+            time.sleep(1)
 
             while time.time() < t_max:
                 if pkg.com1.rx.getIsEmpty() != True:
                     rxBuffer, nrx = pkg.com1.getData(11) 
                     print('.....................................')      
-                    print(f'mensagem: {mensagem} ')
                     print(f'rxBuffer: {rxBuffer} ')
                     print('.....................................')  
 
-                    if rxBuffer == b"Funcionando":
+                    if rxBuffer == txBuffer:
                         print("########## HANDSHAKE FINALIZADO COM SUCESSO ############")
                         HANDSHAKE = False
-
+                        break
+                        
                     else: 
                         print('########## HANDSHAKE FALHOU ############')
                         
@@ -76,9 +78,10 @@ def main():
         
         print('############## COMEÇANDO ENVIO DOS PACOTES #############')
         for i in pkg_nbr:
-            while True:
-                print(payload.total_packages())
-                print(size_list[0], pkg_nbr[0])
+            sending = True
+            while sending:
+                # print(payload.total_packages())
+                # print(size_list[0], pkg_nbr[0])
                 headClass = Head(size_list[i-1], pkg_nbr[i-1], payload.total_packages())
                 head = headClass.create_head()
                 print("----------------------------------------")
@@ -87,11 +90,11 @@ def main():
                 pacote = pkg.create_datagram(head, pkg_list[i-1][0])
                 print(F'PACOTE {pacote} ')
                 
-                if i==2:
+                if test_error and i==2:
                     headClass = Head(size_list[i-1], pkg_nbr[i-2], payload.total_packages())
                     head = headClass.create_head()
                     pacote = pkg.create_datagram(head, pkg_list[i-2][0])
-                    False
+                    sending = False
                     print("----------------------------------------")
                     print("Enviou errado")
 
@@ -105,19 +108,21 @@ def main():
                 print("Esperando Resposta")
                 rxBuffer, nRx = pkg.com1.getData(14)
                 print("----------------------------------------")
-                print(rxBuffer)
+                print(f'rxBuffer: {rxBuffer}')
                 print("----------------------------------------")
                 print(f'i = {i}')
                 keep = rxBuffer[3]
                 repeat = rxBuffer[4]
 
                 if keep == 1 and repeat == 0:
-                    False
+                    sending = False
                     print("----------------------------------------")
                     print("Recebi para continuar")
-        print("----------------------------------------")    
-        print("Enviei Tudo")
-        print("----------------------------------------")
+
+        print("############################## FIM DE ENVIO ############################")
+
+        pkg.com1.disable()
+
     except Exception as exception:
         print(exception)
         pkg.com1.disable()
