@@ -48,8 +48,6 @@ def main():
             pkg.com1.sendData(txBuffer)
             rxBuffer, nRx = pkg.com1.getData(14)
 
-            
-
             if rxBuffer == txBuffer:
                 print("----------------------------------------")
                 print('Servidor pronto !')
@@ -73,14 +71,14 @@ def main():
                     pacote = pkg.create_datagram(head, pkg_list[i-1][0])
                     print(f'PACOTE {i}: {pacote} ')
                     
-                    if test_error and i==2:
-                        headClass = Head(size_list[i-1], pkg_nbr[i-2], payload.total_packages())
-                        #para testar o item 4, basta mudar o primeiro argumento do Head para um numero diferente de 114
-                        head = headClass.create_head()
-                        pacote = pkg.create_datagram(head, pkg_list[i-2][0])
-                        test_error = False
-                        print("----------------------------------------")
-                        print("Enviou errado")
+                    # if test_error and i==2:
+                    #     headClass = Head(size_list[i-1], pkg_nbr[i-2], payload.total_packages())
+                    #     #para testar o item 4, basta mudar o primeiro argumento do Head para um numero diferente de 114
+                    #     head = headClass.create_head()
+                    #     pacote = pkg.create_datagram(head, pkg_list[i-2][0])
+                    #     test_error = False
+                    #     print("----------------------------------------")
+                    #     print("Enviou errado")
                         
 
                     time.sleep(0.1)
