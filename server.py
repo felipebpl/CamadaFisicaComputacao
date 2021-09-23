@@ -3,7 +3,7 @@ import time
 import numpy as np
 from classes import Datagram,Head,Payload
     
-serialName = "COM6"
+serialName = "COM5"
 
 def c_head(keep, repeat):
     #head_list.append((self.type).to_bytes(1, 'big'))
