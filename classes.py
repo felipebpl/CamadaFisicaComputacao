@@ -32,16 +32,19 @@ class Datagram:
 # EOP – 4 bytes: 0xFF 0xAA 0xFF 0xAA
 
 class Head():
-    def __init__(self, type, id_sensor, id_server, total, pkg_number, payload_size, pacote_solicitado, last_pkg, CRC8, CRC9):
-        self.msg_type = type
-        self.sensor_id = id_sensor
-        self.server_id = id_server
+    def __init__(self, tipo, total, pkg_number, payload_size, pacote_solicitado, last_pkg, CRC8, CRC9):
+        self.msg_type = tipo
+        self.sensor_id = 25 #IP SENSOR
+        self.server_id = 12
         self.total_pkg = total
         self.pkg_number = pkg_number
-        if self.msg_type == 3:
+
+        if self.msg_type == 1 or self.msg_type == 2 :
+            self.size = 0
+        else :
             self.size = payload_size
-        else:
-            self.size = b'\x00'
+        #else:
+        #    self.size = b'\x00'
         self.pkg_solicitado = pacote_solicitado
         self.last_pkg = last_pkg
         self.crc8 = CRC8
@@ -60,6 +63,7 @@ class Head():
         self.head_list.append(int(self.crc8).to_bytes(1, 'big'))
         self.head_list.append(int(self.crc9).to_bytes(1, 'big'))
         self.head = b''.join(self.head_list)
+
         while len(self.head) != 10:
             self.head += b'\x00'
 
@@ -95,3 +99,18 @@ class Payload():
             self.n.append(size + 1)
         return self.n
 
+img_path = "br.png"
+with open(img_path, 'rb') as f:
+    ByteImage = f.read()
+
+payload = Payload(ByteImage)
+
+# print(payload.packages_number())
+
+total_pkg = payload.total_packages()
+print(total_pkg)
+head = Head(1, total_pkg, 0, 0,0,0,0,0).create_head()
+eop = b'\xFF\xAA\xFF\xAA'
+t1 = head + eop
+
+print(f't1: {t1}')
