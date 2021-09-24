@@ -1,8 +1,6 @@
 #   para saber a sua porta, execute no terminal :
 #   python -m serial.tools.list_ports
 
-from numpy.core.fromnumeric import size
-from numpy.core.numeric import True_
 from enlace import *
 import time
 import numpy as np
@@ -13,11 +11,7 @@ img_path = "br.png"
 with open(img_path, 'rb') as f:
     ByteImage = f.read()
 
-serialName = "COM3"
-
-def type_message(number):
-    if number == 1:
-        return b'\x01'
+serialName = "COM5"
 
 def main():
     pkg = Datagram(door=serialName)
@@ -39,16 +33,15 @@ def main():
         print(f'Pacotes a serem enviados: {pkg_nbr}')
         print("----------------------------------------")
 
-        
         ENVIO = False
-        cont = 1
+        cont = 0 
         tipo =  1
 
         if tipo == 1: 
 
             HANDSHAKE = True
             
-            head = Head(tipo, total_pkg, 0, 0,0,0,0,0).create_head()
+            head = Head(tipo, total_pkg, 0, 0, 0,0,0,0).create_head()
 
             while HANDSHAKE:
                 
@@ -72,7 +65,7 @@ def main():
                         rxBuffer, nrx = pkg.com1.getData(14) 
                         print('.....................................')      
                         print(f'rxBuffer: {rxBuffer} ')
-                        print('.....................................')  
+                        print('.....................................')    
 
                         if rxBuffer == txBuffer:
                             print("----------------------------------------")
@@ -81,11 +74,12 @@ def main():
                             print("# HANDSHAKE FEITO COM SUCESSO #")
                             print("----------------------------------------")
                             HANDSHAKE = False
+                            tipo = 3 
                             break
 
                 if HANDSHAKE:
                     print("----------------------------------------")
-                    check = input('Servidor inativo. Tentar novamente? [Y/N]')
+                    check = input('Servidor inativo. Tentar novamente? [Y/N]') 
                     print("----------------------------------------")
                     if check.upper() == "Y": 
                         print("Rodando servidor novamente")
@@ -98,27 +92,25 @@ def main():
                         sys.exit()
                 else:
                     pass
-        else:
-            tipo = 3  
 
         if tipo == 3:
+            cont = 1 
             ENVIO = True
-
+    
             while ENVIO:
                 print('# COMEÇANDO ENVIO DOS PACOTES #')
                 print("----------------------------------------------------------")
-                for i in pkg_nbr:
+                for cont in pkg_nbr:
                     sending = True
                     while sending:
-                        # print(payload.total_packages())
-                        # print(size_list[0], pkg_nbr[0])
-                        headClass = Head(size_list[i-1], pkg_nbr[i-1], payload.total_packages())
-                        head = headClass.create_head()
+                        # def __init__(self, tipo, total, pkg_number, payload_size, pacote_solicitado, last_pkg, CRC8, CRC9):
+                        head = Head(tipo, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, 0, 0, 0).create_head()
+
                         print("----------------------------------------")
                         print(f'HEAD {head} ')
                         print("----------------------------------------")
-                        pacote = pkg.create_datagram(head, pkg_list[i-1][0])
-                        print(f'PACOTE {i}: {pacote} ')
+                        pacote = pkg.create_datagram(head, pkg_list[cont-1][0])
+                        print(f'PACOTE {cont}: {pacote} ')
                         
                         # if test_error and i==2:
                         #     #vídeo 4 -> tamanho errado = 70
