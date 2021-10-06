@@ -78,21 +78,52 @@ def main():
 
             pkg.com1.sendData()
         
-        while c < packages:
+        while c <= packages:
+
+            timer1 = time.time()
+            timer2 = time.time()
 
             print("Recebendo Head")
             print("----------------------------------------")
             head, nRx = pkg.com1.getData(10)
 
-            payload_size = head[0]
-            payload_id = head[1] .to_bytes(1, 'big')
-            packages = head[2]
+            msg_type = head[0]
+            payload_size = head[5]
+            payload_id = head[4] .to_bytes(1, 'big')
+            packages = head[3]
 
+            print("Tipo do pacote: "'{}'.format(msg_type))
+            print("----------------------------------------")
             print("Id do pacote: "'{}'.format(payload_id))
             print("----------------------------------------")
             print("Quantidade de pacotes: "'{}'.format(packages))
             print("----------------------------------------")
             payload, nRx = pkg.com1.getData(payload_size)
+            eop, nRx = pkg.com1.getData(4)
+
+            i = 1
+            while i <= packages:
+                if payload_id == i and eop == b'\xFF\xAA\xFF\xAA':
+                    i += 1
+                    #envia msg tipo 4 e tipo 6
+
+                else: 
+                    time.sleep(1)
+                    if timer2 > 20:
+                        ocioso = True
+                        #envia msg tipo 5 
+                        #encerra COM
+                    
+                    else: 
+                        if timer1 > 2:
+                            #envia msg tipo 4
+                            #reset timer
+                            pass
+                        
+                        else:
+                            break
+
+
 
             EOP, nRx = pkg.com1.getData(4)
             print(f'EOP -> {eop} == {EOP}')
@@ -135,5 +166,5 @@ def main():
         print(erro)
         pkg.com1.disable()
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     main()

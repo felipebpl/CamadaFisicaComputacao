@@ -123,12 +123,45 @@ def main():
                             
                         time.sleep(0.1)
                         pkg.com1.sendData(pacote)
+
+                        timer1 = time.time()
+                        timer2 = time.time()
+
                         print("----------------------------------------")
                     
                         print("Pacote enviado")
                         print("----------------------------------------")
 
                         print("Esperando Resposta")
+                        
+                        head, nRx = pkg.com1.getData(10)
+                        tipo = head[0]
+
+                        if tipo == 4:
+                            cont +=1
+                        
+                        else:
+                            if timer1 > 5:
+                                #envia msg tipo 3
+                                #reset timer1
+                                pass
+                            else:
+                                if timer2 > 20:
+                                    #envia msg tipo 5
+                                    #encerra com
+                                    pass
+                                else:
+                                    #recebe msg
+                                    # pkg.com1.getData()
+                                    if tipo == 6:
+                                        #corrige cont
+                                        #envia msg tipo 3
+                                        # reset timer 1 e 2
+                                        pass
+                                    else:
+                                        #volta tudo
+                                        pass
+
                         rxBuffer, nRx = pkg.com1.getData(14)
                         # print(f'i = {i}')
                         keep = rxBuffer[3]
