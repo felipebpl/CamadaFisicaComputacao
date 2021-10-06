@@ -100,7 +100,7 @@ def main():
             while ENVIO:
                 print('# COMEÇANDO ENVIO DOS PACOTES #')
                 print("----------------------------------------------------------")
-                for cont in pkg_nbr:
+                while cont <= pkg_nbr:
                     sending = True
                     while sending:
                         # def __init__(self, tipo, total, pkg_number, payload_size, pacote_solicitado, last_pkg, CRC8, CRC9):
@@ -120,7 +120,7 @@ def main():
                         #     test_error = False
                         #     print("----------------------------------------")
                         #     print("Enviou errado")
-                            
+                        
                         time.sleep(0.1)
                         pkg.com1.sendData(pacote)
 
@@ -141,26 +141,21 @@ def main():
                             cont +=1
                         
                         else:
-                            if timer1 > 5:
-                                #envia msg tipo 3
-                                #reset timer1
+                            if timer2 > 20:
+                                #envia msg tipo 5
+                                #encerra com
                                 pass
                             else:
-                                if timer2 > 20:
-                                    #envia msg tipo 5
-                                    #encerra com
+                                #recebe msg
+                                # pkg.com1.getData()
+                                if tipo == 6:
+                                    #corrige cont
+                                    #envia msg tipo 3
+                                    # reset timer 1 e 2
                                     pass
                                 else:
-                                    #recebe msg
-                                    # pkg.com1.getData()
-                                    if tipo == 6:
-                                        #corrige cont
-                                        #envia msg tipo 3
-                                        # reset timer 1 e 2
-                                        pass
-                                    else:
-                                        #volta tudo
-                                        pass
+                                    #volta tudo
+                                    pass
 
                         rxBuffer, nRx = pkg.com1.getData(14)
                         # print(f'i = {i}')
