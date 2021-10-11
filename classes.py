@@ -104,10 +104,9 @@ with open(img_path, 'rb') as f:
     ByteImage = f.read()
 
 payload = Payload(ByteImage)
-
 # print(payload.packages_number())
-
 total_pkg = payload.total_packages()
+
 print(total_pkg)
 head = Head(1, total_pkg, 0, 0,0,0,0,0).create_head()
 eop = b'\xFF\xAA\xFF\xAA'

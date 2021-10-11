@@ -5,7 +5,7 @@ class Log():
         self.msg_type = info[0]
         self.size = len(info)
         self.alteration = alteration
-        self.time = datetime.now()
+        self.time = datetime.now().strftime("%d/%m/%Y %H:%M:%S.%f")
         self.all = []
 
         if self.msg_type == 3:
@@ -26,11 +26,11 @@ class Log():
             info = f'{self.time} / {self.alteration} / {self.msg_type} / {self.size}'
         return info
 
-    def write_logs(self, info, filename):
+    def write_log(self, created, filename):
         # quando passar o atributo filename, ja definir o path, server ou client, e a teste que for Ex: write_logs(Log, 'Client1.txt')
-        self.all.append(info)
+        self.all.append(created)
         file = open(filename, "a")
-        for info in self.all:
-            file.write(info)
+        for created in self.all:
+            file.write(created)
             file.write('\n')
             file.close()
