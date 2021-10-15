@@ -126,7 +126,7 @@ def main():
                     # pacote = pkg.create_datagram(head_t6, pkg_list[c-1][0])
                     # pkg.com1.sendData(pacote)
 
-                    t6 = head_t4 + eop
+                    t6 = head_t6 + eop
 
                     pkg.com1.sendData(t6)
 
@@ -180,6 +180,7 @@ def main():
 
                     
         print("FIM DE ENVIO DOS PACOTES")    
+        print("----------------------------------------")
 
         all_results = b''
 

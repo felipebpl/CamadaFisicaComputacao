@@ -172,7 +172,7 @@ def main():
                     pkg.com1.clearBuffer()
                 
                 else: 
-                    if time.time - timer1 > 20 :
+                    if time.time() - timer1 > 20 :
                     # while time.time() < timer_timeout:
 
                         print(f'######### TIMEOUT #########')
