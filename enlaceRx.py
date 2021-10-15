@@ -72,6 +72,18 @@ class RX(object):
             time.sleep(0.05)                 
         return(self.getBuffer(size))
 
+    # def getNData(self, size):
+    #     reenvio = time.time() + 5 
+    #     timeout = time.time() + 20
+        
+    #     while(self.getBufferLen() < size):
+    #         time.sleep(0.05)
+    #         while time.time() < timeout:
+    #             while time.time() < reenvio:
+    #                 return "REENVIE"
+    #         return "TIMEOUT"
+    #     return(self.getBuffer(size))       
+
 
     def clearBuffer(self):
         self.buffer = b""

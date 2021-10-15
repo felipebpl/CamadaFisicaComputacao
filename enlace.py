@@ -42,3 +42,7 @@ class enlace(object):
     def getData(self, size):
         data = self.rx.getNData(size)
         return(data, len(data))
+        
+    # def getData2(self, size, ti):
+    #     data = self.rx.getNData2(size,ti)
+    #     return(data, len(data))

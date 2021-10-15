@@ -4,13 +4,12 @@
 from math import log
 from enlace import *
 import time
-import numpy as np
 from classes import Datagram,Head,Payload
 import sys
 from Log import Log
+import traceback as tb
 
-
-img_path = "br.png"
+img_path = "imgs/br_flag.png"
 with open(img_path, 'rb') as f:
     ByteImage = f.read()
 
@@ -25,6 +24,8 @@ def main():
     total_pkg = payload.total_packages()
     pkg_nbr = payload.packages_number()
     pkg_list = payload.build_package()
+
+    # pkg.com1.fisica.flush()
 
     try:
         
@@ -52,6 +53,7 @@ def main():
                 timeout =  time.time() + 5
 
                 t1 = head + eop
+
                 print('.....................................')      
                 print(f'Mensagem t1: {t1}')
                 
@@ -103,117 +105,118 @@ def main():
                 else:
                     pass
 
-        if tipo == 3:
-            cont = 1
-            print('# COMEÇANDO ENVIO DOS PACOTES #')
+
+        cont = 1
+        print('# COMEÇANDO ENVIO DOS PACOTES #')
+        print("----------------------------------------------------------")
+
+        while cont <= total_pkg:   
+
+            timer1 = time.time()
+                          
+            #(tipo, total, pkg_number, payload_size, pacote_solicitado, last_pkg, CRC8, CRC9):
+            head = Head(3, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, 0, 0, 0).create_head()
+            pacote = pkg.create_datagram(head, pkg_list[cont-1][0])
+
+            print(f'PACOTE {cont}: {pacote} ')
             print("----------------------------------------------------------")
+            time.sleep(1)
+            pkg.com1.sendData(pacote)
 
-            while cont <= total_pkg:   
-                received = False         
-                #(tipo, total, pkg_number, payload_size, pacote_solicitado, last_pkg, CRC8, CRC9):
-                head = Head(tipo, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, 0, 0, 0).create_head()
-                pacote = pkg.create_datagram(head, pkg_list[cont-1][0])
-                print(f'PACOTE {cont}: {pacote} ')
-                print("----------------------------------------------------------")
-                
-                time.sleep(1)
-                pkg.com1.sendData(pacote)
+            log_t3 = Log(head,'envio')
+            t3_msg = log_t3.create_log()
+            log_t3.write_log(t3_msg, "Client1.txt")
 
-                log_t3 = Log(head,'envio')
-                t3_msg = log_t3.create_log()
-                log_t3.write_log(t3_msg, "Client1.txt")
+            print(f"CONT: {cont}")
+            print("----------------------------------------")
 
-                timer1 = time.time()
-                timer2 = time.time()
+            print("Pacote enviado")
+            print("----------------------------------------")
 
-                print("Pacote enviado")
+            print("Esperando Resposta")
+            print("----------------------------------------")
+                                
+            rxBuffer, nRx = pkg.com1.getData(14)
+            
+            t3_response = rxBuffer
+            tipo_response = rxBuffer[0]
+
+            print(f'%%%%%% RX BUFFER = {rxBuffer} %%%%%%%')
+            print(f"****** TIPO RESPONSE = {tipo_response} ********")
+
+            log_t3_response = Log(t3_response,'receb')
+            t3_response_msg = log_t3_response.create_log()
+            log_t3_response.write_log(t3_response_msg, "Client1.txt")
+            
+            if tipo_response == 4:
+                print(f"Tipo : {tipo_response}")
                 print("----------------------------------------")
+                print(f"Pacote {cont} recebido com SUCESSO!")
+                print("----------------------------------------")
+                cont += 1
+                continue
+                timer1 = time.time()
 
-                print("Esperando Resposta")
+            # else:
+            #     print(f"****** TIPO RESPONSE ERRADO = {tipo_response} ********")
 
-                while not received:                    
-    
-                    rxBuffer, nRx = pkg.com1.getData(10)
+            # else: 
+            #     if rxBuffer == "REENVIE":
+            #         print(f'Se passaram 5 segundos, envio o pacote {cont} novamente')
+            #         print("----------------------------------------------------------")
+            #         pkg.com1.sendData(pacote)
 
-                    t3_response = rxBuffer
-                    tipo_response = rxBuffer[0]
+            #         log_t3 = Log(head,'envio')
+            #         t3_msg = log_t3.create_log()
+            #         log_t3.write_log(t3_msg, "Client1.txt")
+            #         pkg.com1.clearBuffer()
 
-                    log_t3_response = Log(t3_response,'receb')
-                    t3_response_msg = log_t3_response.create_log()
-                    log_t3_response.write_log(t3_response_msg, "Client1.txt")
-                    
-                    if tipo_response == 4:
-                        print("----------------------------------------")
-                        print(f"Tipo : {tipo_response}")
-                        print("----------------------------------------")
-                        print(f"Pacote {cont} recebido com SUCESSO!")
-                        print("----------------------------------------")
-                        cont += 1
-                        received = True
+            #     else: 
+            #         if rxBuffer == "TIMEOUT":
+            #             print(f'if timeout , rxBuffer {rxBuffer[0]} =  tipo response {tipo_response}')
+            #             print('[][]*15')
+            #             print(f'######### TIMEOUT #########')
+            #             print("----------------------------------------------------------")
+            #             print(f'Se passaram 20 segundos, encerrando comunicacao')
+            #             print("----------------------------------------------------------")
 
-                    elif tipo_response == 6:
+            #             head_t5 = Head(5, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, rxBuffer[6], 0, 0).create_head()
+            #             pacote_t5 = pkg.create_datagram(head_t5, pkg_list[cont-1][0])
+            #             time.sleep(1)
+            #             pkg.com1.sendData(pacote_t5)
 
-                        cont = rxBuffer[6]
+            #             log_t5 = Log(head_t5,'envio')
+            #             t5_msg = log_t5.create_log()
+            #             log_t5.write_log(t5_msg, "Client1.txt")
 
-                        print("----------------------------------------")
-                        print(f"Tipo : {tipo_response}")
-                        print("----------------------------------------")
-                        print(f"Pacote {cont} INVÁLIDO!")
-                        print("----------------------------------------")
+            #             pkg.com1.disable()
 
-                        head_t6 = Head(tipo_response, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, rxBuffer[6], 0, 0).create_head()
-                        pacote_t6 = pkg.create_datagram(head, pkg_list[cont-1][0])
+            #         else:
+            #             print(f'ultimo else , rxBuffer {rxBuffer[0]} =  tipo response {tipo_response}')
+            #             tipo_response = 6 
+            #             cont = rxBuffer[6]
+            #             head_t6 = Head(tipo_response, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, rxBuffer[6], 0, 0).create_head()
+            #             pacote_t6 = pkg.create_datagram(head_t6, pkg_list[cont-1][0])
 
-                        print("----------------------------------------------------------")
-                        print(f'REENVIANDO PACOTE {cont}')
-                        time.sleep(1)
-                        pkg.com1.sendData(pacote_t6)
-                        print("----------------------------------------------------------")
+            #             print("----------------------------------------------------------")
+            #             print(f'REENVIANDO PACOTE {cont}')
+            #             time.sleep(1)
+            #             pkg.com1.sendData(pacote_t6)
+            #             print("----------------------------------------------------------")
 
-                        log_t6 = Log(head_t6,'envio')
-                        t6_msg = log_t6.create_log()
-                        log_t6.write_log(t6_msg, "Client1.txt")
-
-                        timer2 = time.time()    
-
-                    elif time.time() - timer1 > 5 :
-                
-                        print("----------------------------------------------------------")
-                        print(f'PASSOU 5 SEGUNDOS, REENVIANDO PACOTE {cont}  ')
-                        print("----------------------------------------------------------")
-
-                        pkg.com1.sendData(pacote)
-
-                        log_t3 = Log(head,'envio')
-                        t3_msg = log_t3.create_log()
-                        log_t3.write_log(t3_msg, "Client1.txt")
-
-                        timer1 = time.time()
-
-                    if time.time() - timer2 > 20:
-                        print("----------------------------------------------------------")
-                        print(f'PASSOU 20 SEGUNDOS, ENCERRANDO COMUNICAÇÃO ')
-                        print("----------------------------------------------------------")
-
-                        t5 = 5 
-                        head_t5 = Head(t5, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, rxBuffer[6], 0, 0).create_head()
-                        pacote_t5 = pkg.create_datagram(head, pkg_list[cont-1][0])
-                        time.sleep(1)
-                        pkg.com1.sendData(pacote_t5)
-
-                        log_t5 = Log(head_t5,'envio')
-                        t5_msg = log_t5.create_log()
-                        log_t5.write_log(t5_msg, "Client1.txt")
-
-                        pkg.com1.disable()
+            #             log_t6 = Log(head_t6,'envio')
+            #             t6_msg = log_t6.create_log()
+            #             log_t6.write_log(t6_msg, "Client1.txt")
+            #             timer1 = time.time()
                             
 
-            print("######### FIM DE ENVIO DOS PACOTES ##########")
-            pkg.com1.disable()
-            sys.exit()
+        print("######### FIM DE ENVIO DOS PACOTES ##########")
+        pkg.com1.disable()
+        sys.exit()
 
     except Exception as exception:
-        print(exception)
+        print(tb.format_exc())
+        print(exception, '<- ERRO')
         pkg.com1.disable()
 
 if __name__ == "__main__":

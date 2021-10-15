@@ -1,12 +1,11 @@
 from enlace import *
 import time
-import numpy as np
 from classes import Datagram,Head,Payload
 from Log import Log
     
-serialName = "COM5"
+serialName = "COM4"
 
-img_path = "br.png"
+img_path = "imgs/br_flag.png"
 with open(img_path, 'rb') as f:
     ByteImage = f.read()
 
@@ -20,6 +19,8 @@ def main():
     total_pkg = payload.total_packages()
     pkg_nbr = payload.packages_number()
     pkg_list = payload.build_package()
+
+    # pkg.com1.fisica.flush()
 
     try:
         packages = 255
@@ -62,11 +63,9 @@ def main():
         log_t2 = Log(t2,'envio')
         t2_msg = log_t2.create_log()
         log_t2.write_log(t2_msg, "Server1.txt")
-        
-        while c <= total_pkg:
 
-            timer1 = time.time()
-            timer2 = time.time()
+
+        while c <= total_pkg:
 
             head, nRx = pkg.com1.getData(10)
 
@@ -94,24 +93,32 @@ def main():
                 print("----------------------------------------")
 
                 payload, nRx = pkg.com1.getData(payload_size)
+                eop, nRx = pkg.com1.getData(4)
 
                 t3 = payload
                 log_t3 = Log(t3,'receb')
                 t3_msg = log_t3.create_log()
                 log_t3.write_log(t3_msg, "Server1.txt")
 
-                eop, nRx = pkg.com1.getData(4)
-
+            
                 if eop == b'\xFF\xAA\xFF\xAA' and payload_id == c: 
 
-                    last_pkg = payload_id
-                    print(f'ULTIMO PACOTE RECEBIDO = {last_pkg} COM SUCESSO')
+                    print(f"Tudo Certo -> EOP {eop} // payload_id {payload_id} = c {c}")
+
+                    print(f'ULTIMO PACOTE RECEBIDO = {payload_id} COM SUCESSO')
                     print("----------------------------------------")
 
-                    head_t4 = Head(4, total_pkg, c, payload_size, 0, last_pkg, 0,0).create_head()
-                    pacote = pkg.create_datagram(head_t4, pkg_list[c-1][0])
+                    head_t4 = Head(4, total_pkg, c, payload_size, 0, payload_id, 0,0).create_head()
+
+                    print(f'$$$$$ HEAD ENVIO = {head_t4} // era pra ser 4 $$$$$$$')
+
+                    print(f"pkg_list[c-1][0] = {pkg_list[c-1][0]}")
+
+                    # pacote = pkg.create_datagram(head_t4, pkg_list[c-1][0])
+
+                    t4 = head_t4 + eop
         
-                    pkg.com1.sendData(pacote)
+                    pkg.com1.sendData(t4)
 
                     log_t4 = Log(head_t4,'envio')
                     t4_msg = log_t4.create_log()
@@ -124,6 +131,8 @@ def main():
 
                     last_pkg = c - 1 
 
+                    print(f'last_pkg {last_pkg}')
+
                     head_t6 = Head(6, total_pkg, c, payload_size, 0, payload_id, 0,0).create_head()
                     pacote = pkg.create_datagram(head_t6, pkg_list[c-1][0])
         
@@ -133,48 +142,45 @@ def main():
                     t6_msg = log_t6.create_log()
                     log_t6.write_log(t6_msg, "Server1.txt")
 
-            else:
+            # else:
 
-                time.sleep(1)
+            #     time.sleep(1)
 
-                if time.time() - timer2:
-                    print(f'TIMEOUT')
-                    print("----------------------------------------")
-                    ocioso = True 
-                    head_t5 = Head(5, total_pkg, c, payload_size, 0, payload_id, 0,0).create_head()
-                    pacote = pkg.create_datagram(head_t5, pkg_list[c-1][0])
+            #     if time.time() - timer2 > 20:
+            #         print(f'TIMEOUT')
+            #         print("----------------------------------------")
+            #         ocioso = True 
+            #         head_t5 = Head(5, total_pkg, c, payload_size, 0, payload_id, 0,0).create_head()
+            #         pacote = pkg.create_datagram(head_t5, pkg_list[c-1][0])
         
-                    pkg.com1.sendData(pacote)
+            #         pkg.com1.sendData(pacote)
 
-                    log_t5 = Log(head_t5,'envio')
-                    t5_msg = log_t5.create_log()
-                    log_t5.write_log(t5_msg, "Server1.txt")
+            #         log_t5 = Log(head_t5,'envio')
+            #         t5_msg = log_t5.create_log()
+            #         log_t5.write_log(t5_msg, "Server1.txt")
 
-                    print("########## ENCERRANDO COMUNICAÇÃO ###########")
-                    pkg.com1.disable()
-                    break
+            #         print("########## ENCERRANDO COMUNICAÇÃO ###########")
+            #         pkg.com1.disable()
+            #         break
 
-                else:
+            #     else:
 
-                    if time.time() - timer1 > 2 :
-                        last_pkg = payload_id
-                        print(f'ULTIMO PACOTE RECEBIDO = {last_pkg} COM SUCESSO')
-                        print("----------------------------------------")
+            #         if time.time() - timer1 > 2 :
+            #             last_pkg = payload_id
+            #             print(f'ULTIMO PACOTE RECEBIDO = {last_pkg} COM SUCESSO')
+            #             print("----------------------------------------")
 
-                        head_t4 = Head(4, total_pkg, c, payload_size, 0, last_pkg, 0,0).create_head()
-                        pacote = pkg.create_datagram(head_t4, pkg_list[c-1][0])
+            #             head_t4 = Head(4, total_pkg, c, payload_size, 0, last_pkg, 0,0).create_head()
+            #             pacote = pkg.create_datagram(head_t4, pkg_list[c-1][0])
             
-                        pkg.com1.sendData(pacote)
+            #             pkg.com1.sendData(pacote)
 
-                        log_t4 = Log(head_t4,'envio')
-                        t4_msg = log_t4.create_log()
-                        log_t4.write_log(t4_msg, "Server1.txt")
-                        timer1 = time.time()
+            #             log_t4 = Log(head_t4,'envio')
+            #             t4_msg = log_t4.create_log()
+            #             log_t4.write_log(t4_msg, "Server1.txt")
+            #             timer1 = time.time()
 
-                        
-
-
-
+                    
         print("FIM")    
 
         all_results = b''

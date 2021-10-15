@@ -3,7 +3,6 @@
 
 from os import error, path
 from enlace import *
-import numpy as np
 from math import *
 
 
@@ -12,7 +11,6 @@ class Datagram:
     def __init__(self, door):
         self.com1 = enlace(door)
         self.com1.enable()
-        print('open')
         self.eop = b'\xFF\xAA\xFF\xAA'
 
     def create_datagram(self, head, pkg=b''):
@@ -99,17 +97,21 @@ class Payload():
             self.n.append(size + 1)
         return self.n
 
-img_path = "br.png"
-with open(img_path, 'rb') as f:
-    ByteImage = f.read()
 
-payload = Payload(ByteImage)
-# print(payload.packages_number())
-total_pkg = payload.total_packages()
+#ESPACO DE TESTE DAS CLASSES 
 
-print(total_pkg)
-head = Head(1, total_pkg, 0, 0,0,0,0,0).create_head()
-eop = b'\xFF\xAA\xFF\xAA'
-t1 = head + eop
+# img_path = "imgs/br_flag.png"
+# with open(img_path, 'rb') as f:
+#     ByteImage = f.read()
 
-print(f't1: {t1}')
+# payload = Payload(ByteImage)
+# # print(payload.packages_number())
+# total_pkg = payload.total_packages()
+
+# print(total_pkg)
+
+# head = Head(1, total_pkg, 0, 0,0,0,0,0).create_head()
+# eop = b'\xFF\xAA\xFF\xAA'
+# t1 = head + eop
+
+# print(f't1: {t1}')
