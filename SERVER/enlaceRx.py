@@ -67,23 +67,18 @@ class RX(object):
         self.threadResume()
         return(b)
 
-    def getNData(self, size):
-        while(self.getBufferLen() < size):
-            time.sleep(0.05)                 
-        return(self.getBuffer(size))
-
     # def getNData(self, size):
-    #     reenvio = time.time() + 5 
-    #     timeout = time.time() + 20
-        
     #     while(self.getBufferLen() < size):
-    #         time.sleep(0.05)
-    #         while time.time() < timeout:
-    #             while time.time() < reenvio:
-    #                 return "REENVIE"
-    #         return "TIMEOUT"
-    #     return(self.getBuffer(size))       
+    #         time.sleep(0.05)                 
+    #     return(self.getBuffer(size))
 
+    def getNData(self, size):
+        timer1 = time.time()
+        while(self.getBufferLen() < size):
+            if timer1 - time.time() > 2:
+                return "REENVIE"
+            time.sleep(0.05)
+        return(self.getBuffer(size))
 
     def clearBuffer(self):
         self.buffer = b""

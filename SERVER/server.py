@@ -2,7 +2,7 @@ from enlace import *
 import time
 from classes import Datagram,Head,Payload
 from Log import Log
-    
+import traceback as tb
 serialName = "COM4"
 
 img_path = "imgs/br_flag.png"
@@ -36,7 +36,7 @@ def main():
             t1 = rxBuffer
             log_t1 = Log(t1,'receb')
             t1_msg = log_t1.create_log()
-            log_t1.write_log(t1_msg, "Server1.txt")
+            log_t1.write_log(t1_msg, "SERVER/logs/Server1.txt")
 
             print('ID: ', rxBuffer[2])
 
@@ -62,7 +62,7 @@ def main():
 
         log_t2 = Log(t2,'envio')
         t2_msg = log_t2.create_log()
-        log_t2.write_log(t2_msg, "Server1.txt")
+        log_t2.write_log(t2_msg, "SERVER/logs/Server1.txt")
 
 
         while c <= total_pkg:
@@ -72,7 +72,7 @@ def main():
             t3 = head
             log_t3 = Log(t3,'receb')
             t3_msg = log_t3.create_log()
-            log_t3.write_log(t3_msg, "Server1.txt")
+            log_t3.write_log(t3_msg, "SERVER/logs/Server1.txt")
 
             msg_type = head[0]
 
@@ -98,7 +98,7 @@ def main():
                 t3 = payload
                 log_t3 = Log(t3,'receb')
                 t3_msg = log_t3.create_log()
-                log_t3.write_log(t3_msg, "Server1.txt")
+                log_t3.write_log(t3_msg, "SERVER/logs/Server1.txt")
 
             
                 if eop == b'\xFF\xAA\xFF\xAA' and payload_id == c: 
@@ -110,19 +110,13 @@ def main():
 
                     head_t4 = Head(4, total_pkg, c, payload_size, 0, payload_id, 0,0).create_head()
 
-                    print(f'$$$$$ HEAD ENVIO = {head_t4} // era pra ser 4 $$$$$$$')
-
-                    print(f"pkg_list[c-1][0] = {pkg_list[c-1][0]}")
-
-                    # pacote = pkg.create_datagram(head_t4, pkg_list[c-1][0])
-
                     t4 = head_t4 + eop
         
                     pkg.com1.sendData(t4)
 
                     log_t4 = Log(head_t4,'envio')
                     t4_msg = log_t4.create_log()
-                    log_t4.write_log(t4_msg, "Server1.txt")
+                    log_t4.write_log(t4_msg, "SERVER/logs/Server1.txt")
                     c += 1 
                 
                 else:
@@ -140,7 +134,7 @@ def main():
 
                     log_t6 = Log(head_t6,'envio')
                     t6_msg = log_t6.create_log()
-                    log_t6.write_log(t6_msg, "Server1.txt")
+                    log_t6.write_log(t6_msg, "SERVER/logs/Server1.txt")
 
             # else:
 
@@ -157,7 +151,7 @@ def main():
 
             #         log_t5 = Log(head_t5,'envio')
             #         t5_msg = log_t5.create_log()
-            #         log_t5.write_log(t5_msg, "Server1.txt")
+            #         log_t5.write_log(t5_msg, "SERVER/logs/Server1.txt")
 
             #         print("########## ENCERRANDO COMUNICAÇÃO ###########")
             #         pkg.com1.disable()
@@ -177,11 +171,11 @@ def main():
 
             #             log_t4 = Log(head_t4,'envio')
             #             t4_msg = log_t4.create_log()
-            #             log_t4.write_log(t4_msg, "Server1.txt")
+            #             log_t4.write_log(t4_msg, "SERVER/logs/Server1.txt")
             #             timer1 = time.time()
 
                     
-        print("FIM")    
+        print("FIM DE ENVIO DOS PACOTES")    
 
         all_results = b''
 
@@ -196,6 +190,7 @@ def main():
         
 
     except Exception as erro:
+        print(tb.format_exc())
         print("ops! :-\\")
         print(erro)
         pkg.com1.disable()
