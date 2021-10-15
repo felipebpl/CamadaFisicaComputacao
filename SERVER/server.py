@@ -17,7 +17,6 @@ def main():
     pkg = Datagram(serialName)
     payload = Payload(ByteImage)
     
-    size_list= payload.package_size()
     total_pkg = payload.total_packages()
     pkg_nbr = payload.packages_number()
     pkg_list = payload.build_package()
@@ -96,6 +95,9 @@ def main():
                 print("----------------------------------------")
 
                 payload, nRx = pkg.com1.getData(payload_size)
+
+                results.append(payload)
+
                 eop, nRx = pkg.com1.getData(4)
             
                 if eop == b'\xFF\xAA\xFF\xAA' and payload_id == c: 
@@ -183,6 +185,8 @@ def main():
 
         for i in results:
             all_results += i
+
+        print(all_results)
 
         abre = open("imgs/br_flag_written.png", 'wb')
         abre.write(all_results)
