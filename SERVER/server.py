@@ -37,7 +37,7 @@ def main():
             t1 = rxBuffer
             log_t1 = Log(t1,'receb')
             t1_msg = log_t1.create_log()
-            log_t1.write_log(t1_msg, "SERVER/logs/Server3.txt")
+            log_t1.write_log(t1_msg, "SERVER/logs/Server2_4.txt")
 
             print('ID: ', rxBuffer[2])
 
@@ -63,7 +63,7 @@ def main():
 
         log_t2 = Log(t2,'envio')
         t2_msg = log_t2.create_log()
-        log_t2.write_log(t2_msg, "SERVER/logs/Server3.txt")
+        log_t2.write_log(t2_msg, "SERVER/logs/Server2_4.txt")
 
 
         timer = time.time()
@@ -74,7 +74,7 @@ def main():
             t3 = head
             log_t3 = Log(t3,'receb')
             t3_msg = log_t3.create_log()
-            log_t3.write_log(t3_msg, "SERVER/logs/Server3.txt")
+            log_t3.write_log(t3_msg, "SERVER/logs/Server2_4.txt")
 
             msg_type = head[0]
 
@@ -115,7 +115,7 @@ def main():
 
                     log_t4 = Log(head_t4,'envio')
                     t4_msg = log_t4.create_log()
-                    log_t4.write_log(t4_msg, "SERVER/logs/Server3.txt")
+                    log_t4.write_log(t4_msg, "SERVER/logs/Server2_4.txt")
                     c += 1 
                 
                 else:
@@ -132,7 +132,7 @@ def main():
 
                     log_t6 = Log(head_t6,'envio')
                     t6_msg = log_t6.create_log()
-                    log_t6.write_log(t6_msg, "SERVER/logs/Server3.txt")
+                    log_t6.write_log(t6_msg, "SERVER/logs/Server2_4.txt")
 
             else:
 
@@ -153,7 +153,7 @@ def main():
 
                     log_t5 = Log(head_t5,'envio')
                     t5_msg = log_t5.create_log()
-                    log_t5.write_log(t5_msg, "SERVER/logs/Server3.txt")
+                    log_t5.write_log(t5_msg, "SERVER/logs/Server2_4.txt")
 
                     print("########## ENCERRANDO COMUNICAÇÃO ###########")
                     pkg.com1.disable()
@@ -175,7 +175,7 @@ def main():
 
                         log_t4 = Log(head_t4,'envio')
                         t4_msg = log_t4.create_log()
-                        log_t4.write_log(t4_msg, "SERVER/logs/Server3.txt")
+                        log_t4.write_log(t4_msg, "SERVER/logs/Server2_4.txt")
                         timer = time.time()
 
                     
