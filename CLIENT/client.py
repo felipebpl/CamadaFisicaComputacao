@@ -61,7 +61,7 @@ def main():
 
                 log_t1 = Log(t1,'envio')
                 t1_msg = log_t1.create_log()
-                log_t1.write_log(t1_msg, "CLIENT/logs/Client2_4.txt")
+                log_t1.write_log(t1_msg, "CLIENT/logs/Client5.txt")
 
                 while time.time() < timeout:
 
@@ -70,7 +70,7 @@ def main():
                         t2 = rxBuffer
                         log_t2 = Log(t2,'receb')
                         t2_msg = log_t2.create_log()
-                        log_t2.write_log(t2_msg, "CLIENT/logs/Client2_4.txt")
+                        log_t2.write_log(t2_msg, "CLIENT/logs/Client5.txt")
 
                         print('.....................................')      
                         print(f'Mensagem t2: {rxBuffer} ')
@@ -112,8 +112,10 @@ def main():
 
         
         timer1 = time.time()
-        
-        test_wrong_order = True
+
+
+        #para voltar a primeira situacao basta fazer a linha abaixo = False
+        test_wrong_order = False
 
         while cont <= total_pkg:   
 
@@ -133,7 +135,7 @@ def main():
 
                 log_t3_wrong = Log(head_wrong,'envio')
                 t3_wrong_msg = log_t3_wrong.create_log()
-                log_t3_wrong.write_log(t3_wrong_msg, "CLIENT/logs/Client2_4.txt")
+                log_t3_wrong.write_log(t3_wrong_msg, "CLIENT/logs/Client5.txt")
 
                 test_wrong_order = False
 
@@ -151,7 +153,7 @@ def main():
 
             log_t3 = Log(head,'envio')
             t3_msg = log_t3.create_log()
-            log_t3.write_log(t3_msg, "CLIENT/logs/Client2_4.txt")
+            log_t3.write_log(t3_msg, "CLIENT/logs/Client5.txt")
 
             print(f"CONT: {cont}")
             print("----------------------------------------")
@@ -172,7 +174,7 @@ def main():
 
             log_t3_response = Log(t3_response,'receb')
             t3_response_msg = log_t3_response.create_log()
-            log_t3_response.write_log(t3_response_msg, "CLIENT/logs/Client2_4.txt")
+            log_t3_response.write_log(t3_response_msg, "CLIENT/logs/Client5.txt")
             
             if tipo_response == 4:
                 
@@ -192,7 +194,7 @@ def main():
 
                     log_t3 = Log(head,'envio')
                     t3_msg = log_t3.create_log()
-                    log_t3.write_log(t3_msg, "CLIENT/logs/Client2_4.txt")
+                    log_t3.write_log(t3_msg, "CLIENT/logs/Client5.txt")
                     pkg.com1.clearBuffer()
                 
                 else: 
@@ -211,7 +213,7 @@ def main():
 
                         log_t5 = Log(head_t5,'envio')
                         t5_msg = log_t5.create_log()
-                        log_t5.write_log(t5_msg, "CLIENT/logs/Client2_4.txt")
+                        log_t5.write_log(t5_msg, "CLIENT/logs/Client5.txt")
 
                         pkg.com1.disable()
                         sys.exit()
@@ -235,7 +237,7 @@ def main():
 
                         log_t6 = Log(head_t6,'envio')
                         t6_msg = log_t6.create_log()
-                        log_t6.write_log(t6_msg, "CLIENT/logs/Client2_4.txt")
+                        log_t6.write_log(t6_msg, "CLIENT/logs/Client5.txt")
                         timer1 = time.time()                            
 
 
