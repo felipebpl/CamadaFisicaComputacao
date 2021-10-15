@@ -61,7 +61,7 @@ def main():
 
                 log_t1 = Log(t1,'envio')
                 t1_msg = log_t1.create_log()
-                log_t1.write_log(t1_msg, "CLIENT/logs/Client1.txt")
+                log_t1.write_log(t1_msg, "CLIENT/logs/Client3.txt")
 
                 while time.time() < timeout:
 
@@ -70,7 +70,7 @@ def main():
                         t2 = rxBuffer
                         log_t2 = Log(t2,'receb')
                         t2_msg = log_t2.create_log()
-                        log_t2.write_log(t2_msg, "CLIENT/logs/Client1.txt")
+                        log_t2.write_log(t2_msg, "CLIENT/logs/Client3.txt")
 
                         print('.....................................')      
                         print(f'Mensagem t2: {rxBuffer} ')
@@ -110,8 +110,9 @@ def main():
         print('# COMEÇANDO ENVIO DOS PACOTES #')
         print("----------------------------------------------------------")
 
-        timer_timeout = time.time() + 20 
+        
         timer1 = time.time()
+        
 
         while cont <= total_pkg:   
 
@@ -126,7 +127,7 @@ def main():
 
             log_t3 = Log(head,'envio')
             t3_msg = log_t3.create_log()
-            log_t3.write_log(t3_msg, "CLIENT/logs/Client1.txt")
+            log_t3.write_log(t3_msg, "CLIENT/logs/Client3.txt")
 
             print(f"CONT: {cont}")
             print("----------------------------------------")
@@ -147,7 +148,7 @@ def main():
 
             log_t3_response = Log(t3_response,'receb')
             t3_response_msg = log_t3_response.create_log()
-            log_t3_response.write_log(t3_response_msg, "CLIENT/logs/Client1.txt")
+            log_t3_response.write_log(t3_response_msg, "CLIENT/logs/Client3.txt")
             
             if tipo_response == 4:
                 
@@ -167,7 +168,7 @@ def main():
 
                     log_t3 = Log(head,'envio')
                     t3_msg = log_t3.create_log()
-                    log_t3.write_log(t3_msg, "CLIENT/logs/Client1.txt")
+                    log_t3.write_log(t3_msg, "CLIENT/logs/Client3.txt")
                     pkg.com1.clearBuffer()
                 
                 else: 
@@ -186,32 +187,32 @@ def main():
 
                         log_t5 = Log(head_t5,'envio')
                         t5_msg = log_t5.create_log()
-                        log_t5.write_log(t5_msg, "CLIENT/logs/Client1.txt")
+                        log_t5.write_log(t5_msg, "CLIENT/logs/Client3.txt")
 
                         pkg.com1.disable()
                         sys.exit()
 
                     else:
-                        if tipo_response == 6:
-                            
-                            cont = rxBuffer[6]
+                        tipo_response = 6
+                        
+                        cont = rxBuffer[6]
 
-                            print(f"Tipo : {tipo_response}")
-                            print("----------------------------------------")
+                        print(f"Tipo : {tipo_response}")
+                        print("----------------------------------------")
 
-                            head_t6 = Head(tipo_response, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, rxBuffer[6], 0, 0).create_head()
-                            pacote_t6 = pkg.create_datagram(head_t6, pkg_list[cont-1][0])
+                        head_t6 = Head(tipo_response, total_pkg, pkg_nbr[cont-1], size_list[cont-1], 0, rxBuffer[6], 0, 0).create_head()
+                        pacote_t6 = pkg.create_datagram(head_t6, pkg_list[cont-1][0])
 
-                            print("----------------------------------------------------------")
-                            print(f'REENVIANDO PACOTE {cont}')
-                            time.sleep(1)
-                            pkg.com1.sendData(pacote_t6)
-                            print("----------------------------------------------------------")
+                        print("----------------------------------------------------------")
+                        print(f'REENVIANDO PACOTE {cont}')
+                        time.sleep(1)
+                        pkg.com1.sendData(pacote_t6)
+                        print("----------------------------------------------------------")
 
-                            log_t6 = Log(head_t6,'envio')
-                            t6_msg = log_t6.create_log()
-                            log_t6.write_log(t6_msg, "CLIENT/logs/Client1.txt")
-                            timer1 = time.time()                            
+                        log_t6 = Log(head_t6,'envio')
+                        t6_msg = log_t6.create_log()
+                        log_t6.write_log(t6_msg, "CLIENT/logs/Client3.txt")
+                        timer1 = time.time()                            
 
 
         print("######### FIM DE ENVIO DOS PACOTES ##########")

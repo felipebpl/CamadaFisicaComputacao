@@ -107,6 +107,8 @@ class Payload():
 # payload = Payload(ByteImage)
 # # print(payload.packages_number())
 # total_pkg = payload.total_packages()
+# pkgs = payload.build_package()
+# print(pkgs)
 
 # print(total_pkg)
 
