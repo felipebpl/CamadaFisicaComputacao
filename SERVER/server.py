@@ -2,7 +2,9 @@ from enlace import *
 import time
 from classes import Datagram,Head,Payload
 from Log import Log
+import sys
 import traceback as tb
+
 serialName = "COM4"
 
 img_path = "imgs/br_flag.png"
@@ -65,6 +67,7 @@ def main():
         log_t2.write_log(t2_msg, "SERVER/logs/Server1.txt")
 
 
+        timer = time.time()
         while c <= total_pkg:
 
             head, nRx = pkg.com1.getData(10)
@@ -94,12 +97,6 @@ def main():
 
                 payload, nRx = pkg.com1.getData(payload_size)
                 eop, nRx = pkg.com1.getData(4)
-
-                t3 = payload
-                log_t3 = Log(t3,'receb')
-                t3_msg = log_t3.create_log()
-                log_t3.write_log(t3_msg, "SERVER/logs/Server1.txt")
-
             
                 if eop == b'\xFF\xAA\xFF\xAA' and payload_id == c: 
 
@@ -120,59 +117,64 @@ def main():
                     c += 1 
                 
                 else:
-                    print(f'ERRO NO PACOTE')
+                    print(f'ERRO NO PACOTE {c}')
                     print("----------------------------------------")
 
-                    last_pkg = c - 1 
-
-                    print(f'last_pkg {last_pkg}')
-
                     head_t6 = Head(6, total_pkg, c, payload_size, 0, payload_id, 0,0).create_head()
-                    pacote = pkg.create_datagram(head_t6, pkg_list[c-1][0])
-        
-                    pkg.com1.sendData(pacote)
+                    # pacote = pkg.create_datagram(head_t6, pkg_list[c-1][0])
+                    # pkg.com1.sendData(pacote)
+
+                    t6 = head_t4 + eop
+
+                    pkg.com1.sendData(t6)
 
                     log_t6 = Log(head_t6,'envio')
                     t6_msg = log_t6.create_log()
                     log_t6.write_log(t6_msg, "SERVER/logs/Server1.txt")
 
-            # else:
+            else:
 
-            #     time.sleep(1)
+                time.sleep(1)
 
-            #     if time.time() - timer2 > 20:
-            #         print(f'TIMEOUT')
-            #         print("----------------------------------------")
-            #         ocioso = True 
-            #         head_t5 = Head(5, total_pkg, c, payload_size, 0, payload_id, 0,0).create_head()
-            #         pacote = pkg.create_datagram(head_t5, pkg_list[c-1][0])
-        
-            #         pkg.com1.sendData(pacote)
+                if time.time() - timer > 20:
+                    print(f'TIMEOUT')
+                    print("----------------------------------------")
 
-            #         log_t5 = Log(head_t5,'envio')
-            #         t5_msg = log_t5.create_log()
-            #         log_t5.write_log(t5_msg, "SERVER/logs/Server1.txt")
+                    # ocioso = True 
+                    head_t5 = Head(5, total_pkg, c, payload_size, 0, payload_id, 0,0).create_head()
+                    # pacote = pkg.create_datagram(head_t5, pkg_list[c-1][0])
+                    # pkg.com1.sendData(pacote)
 
-            #         print("########## ENCERRANDO COMUNICAÇÃO ###########")
-            #         pkg.com1.disable()
-            #         break
+                    t5 = head_t5 + eop
 
-            #     else:
+                    pkg.com1.sendData(t5)
 
-            #         if time.time() - timer1 > 2 :
-            #             last_pkg = payload_id
-            #             print(f'ULTIMO PACOTE RECEBIDO = {last_pkg} COM SUCESSO')
-            #             print("----------------------------------------")
+                    log_t5 = Log(head_t5,'envio')
+                    t5_msg = log_t5.create_log()
+                    log_t5.write_log(t5_msg, "SERVER/logs/Server1.txt")
 
-            #             head_t4 = Head(4, total_pkg, c, payload_size, 0, last_pkg, 0,0).create_head()
-            #             pacote = pkg.create_datagram(head_t4, pkg_list[c-1][0])
+                    print("########## ENCERRANDO COMUNICAÇÃO ###########")
+                    pkg.com1.disable()
+                    sys.exit()
+
+
+                else:
+
+                    if rxBuffer == "REENVIE":
+                        last_pkg = payload_id
+                        print(f'ULTIMO PACOTE RECEBIDO = {last_pkg} COM SUCESSO')
+                        print("----------------------------------------")
+
+                        head_t4 = Head(4, total_pkg, c, payload_size, 0, last_pkg, 0,0).create_head()
+                        
+                        t4 = head_t4 + eop 
             
-            #             pkg.com1.sendData(pacote)
+                        pkg.com1.sendData(t4)
 
-            #             log_t4 = Log(head_t4,'envio')
-            #             t4_msg = log_t4.create_log()
-            #             log_t4.write_log(t4_msg, "SERVER/logs/Server1.txt")
-            #             timer1 = time.time()
+                        log_t4 = Log(head_t4,'envio')
+                        t4_msg = log_t4.create_log()
+                        log_t4.write_log(t4_msg, "SERVER/logs/Server1.txt")
+                        timer = time.time()
 
                     
         print("FIM DE ENVIO DOS PACOTES")    
@@ -182,7 +184,7 @@ def main():
         for i in results:
             all_results += i
 
-        abre = open("br.png", 'wb')
+        abre = open("imgs/br_flag_written.png", 'wb')
         abre.write(all_results)
         abre.close()
 
