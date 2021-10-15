@@ -186,7 +186,11 @@ def main():
         for i in results:
             all_results += i
 
-        print(all_results)
+        print(f" REESCREVENDO IMAGEM: {all_results}")
+        print("----------------------------------------")
+        print(f'ENCERRANDO COMUNICACAO')
+        print("----------------------------------------")
+        
 
         abre = open("imgs/br_flag_written.png", 'wb')
         abre.write(all_results)
