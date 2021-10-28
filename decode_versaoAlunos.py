@@ -8,6 +8,8 @@ import sounddevice as sd
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft
 from scipy import signal as window
+from suaBibSignal import *
+import time
 
 
 #funcao para transformas intensidade acustica em dB
@@ -20,23 +22,30 @@ def main():
  
     #declare um objeto da classe da sua biblioteca de apoio (cedida)    
     #declare uma variavel com a frequencia de amostragem, sendo 44100
+
+    signal = signalMeu
+    fs = 44100
     
     #voce importou a bilioteca sounddevice como, por exemplo, sd. entao
     # os seguintes parametros devem ser setados:
     
-    sd.default.samplerate = #taxa de amostragem
+    duration = 4
+    sd.default.samplerate = fs
+    freqDeAmostragem = fs
+    numAmostras = duration*fs
     sd.default.channels = 2  #voce pode ter que alterar isso dependendo da sua placa
-    duration = #tempo em segundos que ira aquisitar o sinal acustico captado pelo mic
 
-
-    # faca um printo na tela dizendo que a captacao comecará em n segundos. e entao 
+    # faca um print na tela dizendo que a captacao comecará em n segundos. e entao 
     #use um time.sleep para a espera
+    print('A captação começara em 4 segundos')
+    time.sleep(4)
    
-   #faca um print informando que a gravacao foi inicializada
-   
-   #declare uma variavel "duracao" com a duracao em segundos da gravacao. poucos segundos ... 
-   #calcule o numero de amostras "numAmostras" que serao feitas (numero de aquisicoes)
-   
+    #faca um print informando que a gravacao foi inicializada 
+    print('Gravação iniciada')
+
+    #declare uma variavel "duracao" com a duracao em segundos da gravacao. poucos segundos ... 
+    #calcule o numero de amostras "numAmostras" que serao feitas (numero de aquisicoes)
+
     audio = sd.rec(int(numAmostras), freqDeAmostragem, channels=1)
     sd.wait()
     print("...     FIM")
@@ -46,7 +55,21 @@ def main():
     
 
     # use a funcao linspace e crie o vetor tempo. Um instante correspondente a cada amostra!
-    t = np.linspace(inicio,fim,numPontos)
+    t = np.linspace(-duration/2,duration/2,duration*fs)
+
+    # plot do gravico  áudio vs tempo!
+
+    yAudio = audio[:,1]
+    samplesAudio = len(yAudio)
+   
+    
+    ## Calcula e exibe o Fourier do sinal audio. como saida tem-se a amplitude e as frequencias
+    xf, yf = signal.calcFFT(yAudio, fs)
+    plt.figure("F(y)")
+    plt.plot(xf, np.abs(yf))
+    plt.grid()
+    plt.title('Fourier audio')
+    plt.xlim(0, 0.1)
 
     # plot do gravico  áudio vs tempo!
    
