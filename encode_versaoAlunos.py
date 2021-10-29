@@ -92,7 +92,7 @@ def main():
     X, Y = signal.calcFFT(y,fs)
     plt.figure()
     plt.stem(X,np.abs(Y))
-    
+    plt.xlim(0,2500)
     #printe o grafico no tempo do sinal a ser reproduzido
     # reproduz o som
     sd.play(tone, fs)
