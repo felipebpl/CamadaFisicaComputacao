@@ -18,9 +18,19 @@ def main():
 
     normalized_audio = normalize(data)
 
-    tf, yf = signal.generateSin(normalized_audio, 1, 5, samplerate)
+    duration = len(normalized_audio)/samplerate
+
+    print(f'Duração = {duration}')
+
+    t = np.linspace(0.0, duration, len(normalized_audio))
+
+    # tf, yf = signal.generateSin(normalized_audio, 1, 5, samplerate)
 
     #Gráfico 1: Sinal de áudio original normalizado – domínio do tempo
+    plt.figure(figsize = (15, 10))
+    plt.plot(t, normalized_audio)
+    plt.title('Sinal de áudio original normalizado pelo domínio do tempo')
+    plt.show()
 
     print(f'SampleRate: {samplerate}')
     print('-'*50)
@@ -32,9 +42,11 @@ def main():
 
     filtered_audio = LPF(normalized_audio[:,0], fcutt, samplerate)
 
-    print(f'Tamanho = {len(filtered_audio)}')
-
-    # Gráfico 2: Sinal de áudio filtrado – domínio do tempo. (repare que não se nota diferença). 
+    # Gráfico 2: Sinal de áudio filtrado – domínio do tempo. (repare que não se nota diferença).
+    plt.figure(figsize = (15, 10))
+    plt.plot(t, filtered_audio)
+    plt.title('Sinal de áudio filtrado pelo domínio do tempo. ')
+    plt.show() 
 
     signal.plotFFT(filtered_audio, samplerate, 'Sinal Filtrado')  #Gráfico 3: Sinal de áudio filtrado – domínio da frequência.  
 
@@ -49,6 +61,10 @@ def main():
     dmod = mod * amp
 
     # Gráfico 4: sinal de áudio modulado – domínio do tempo
+    plt.figure(figsize = (15, 10))
+    plt.plot(t, mod)
+    plt.title('Sinal de áudio modulado pelo domínio do tempo ')
+    plt.show() 
 
     signal.plotFFT(mod, samplerate, 'Sinal Modulado')  #Gráfico 5: sinal de áudio modulado – domínio da frequência
 
